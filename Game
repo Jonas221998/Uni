@@ -1,0 +1,181 @@
+package GamefuersHochhaus;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+
+import acm.graphics.*;
+import acm.program.*;
+
+public class Grob extends GraphicsProgram implements KeyListener {
+	GRect rahmen;
+	boolean[] getroffen = new boolean[20];
+	Balken[] balkenArray = new Balken[120];
+	GRect player;
+
+	int x = 2;
+	int y = -5;
+	Kugel k1;
+
+	public void init() {
+
+		player = new GRect(220, 690, 100, 10);
+		player.setFillColor(Color.BLACK);
+		player.setFilled(true);
+		add(player);
+
+		rahmen = new GRect(0, 0, 540, 700);
+		add(rahmen);
+		k1 = new Kugel();
+		add(k1);
+		Ball ball1 = new Ball();
+		add(ball1);
+		Thread spielball = new Thread(k1);
+		spielball.start();
+
+		balkenArray[0] = new Balken(40, 50);
+		balkenArray[1] = new Balken(160, 50);
+		balkenArray[2] = new Balken(280, 50);
+		balkenArray[3] = new Balken(400, 50);
+
+		balkenArray[4] = new Balken(40, 100);
+		balkenArray[5] = new Balken(160, 100);
+		balkenArray[6] = new Balken(280, 100);
+		balkenArray[7] = new Balken(400, 100);
+
+		balkenArray[8] = new Balken(40, 150);
+		balkenArray[9] = new Balken(160, 150);
+		balkenArray[10] = new Balken(280, 150);
+		balkenArray[11] = new Balken(400, 150);
+
+		balkenArray[12] = new Balken(40, 200);
+		balkenArray[13] = new Balken(160, 200);
+		balkenArray[14] = new Balken(280, 200);
+		balkenArray[15] = new Balken(400, 200);
+
+		balkenArray[16] = new Balken(40, 250);
+		balkenArray[17] = new Balken(160, 250);
+		balkenArray[18] = new Balken(280, 250);
+		balkenArray[19] = new Balken(400, 250);
+
+		addKeyListeners();
+	}
+
+	public void keyPressed(KeyEvent e) {
+
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			if (player.getX() != 0) {
+				player.move(-20, 0);
+			}
+			break;
+		case KeyEvent.VK_RIGHT:
+			if (player.getX() != 440) {
+				player.move(20, 0);
+			}
+			break;
+
+		// case KeyEvent.VK_DOWN: k1.move(0, 5); break; case KeyEvent.VK_UP:
+		// k1.move(0, -5);
+		// break; case KeyEvent.VK_A: k1.move(5, 0); break; case KeyEvent.VK_S:
+		// k1.move(-5, 0); break;
+
+		}
+
+	}
+
+	class Kugel extends GOval implements Runnable {
+
+		public Kugel() {
+			super(250, 600, 20, 20);
+			setFilled(true);
+
+		}
+
+		public void run() {
+			while (true) {
+				if (getY() == 0) {
+					y = 5;
+				}
+				// if(getY() == 680){
+				// y = -5;
+				// }
+
+				if (getX() == 0) {
+					x = 5;
+				}
+				if (getX() == 520) {
+					x = -5;
+				}
+
+				if (getY() == 670 && getX() >= player.getX() && getX() <= (player.getX() + 100)) {
+					y = -5;
+
+				}
+				move(x, y);
+				for (int i = 0; i < 20; i++) {
+					if (balkenArray[i] != null && getroffen[i] == false) {
+						if (getY() >= balkenArray[i].getY() && getY() <= balkenArray[i].getY() + 40
+								&& getX() >= balkenArray[i].getX() && getX() <= (balkenArray[i].getX() + 100)) {
+							balkenArray[i].setVisible(false);
+							if (getY() == balkenArray[i].getY()) {
+								y = -5;
+
+							} else {
+								y = 5;
+							}
+							getroffen[i] = true;
+						}
+					}
+				}
+
+				pause(25);
+
+			}
+
+		}
+	}
+
+	class Balken {
+		GRect balken;
+
+		public Balken(int x, int y) {
+
+			balken = new GRect(x, y, 100, 40);
+			balken.setFilled(true);
+			if (y >= 50 && y < 100) {
+				balken.setFillColor(Color.BLACK);
+			}
+			if (y >= 100 && y < 150) {
+				balken.setFillColor(Color.BLUE);
+			}
+			if (y >= 150 && y < 200) {
+				balken.setFillColor(Color.GREEN);
+			}
+			if (y >= 200 && y < 250) {
+				balken.setFillColor(Color.YELLOW);
+			}
+			if (y >= 250 && y < 300) {
+				balken.setFillColor(Color.RED);
+			}
+			add(balken);
+			balken.setVisible(true);
+		}
+
+		public double getX() {
+			return balken.getX();
+		}
+
+		public double getY() {
+			return balken.getY();
+		}
+
+		public void setVisible(boolean visible) {
+			balken.setVisible(visible);
+		}
+	}
+}
